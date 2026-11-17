@@ -1,14 +1,14 @@
 # KRANIUM PRESS
 
-> A block-based page builder that outputs **plain HTML**. Built on [kranium.css](https://github.com/chog-pamp) + kranium.js. Zero dependencies, zero build step, one folder.
+> A block-based page builder that exports plain HTML. It runs on [kranium.css](https://github.com/chog-pamp) + kranium.js, lives in one folder, and has no dependencies or build step.
 
-<!-- NOTE: this README is an example draft — rewrite it in your own voice -->
+<!-- NOTE: this README is an example draft, rewrite it in your own voice -->
 
-## What it is
+## What it does
 
-KraniumPress is a website builder that runs entirely in your browser. You drag blocks onto a canvas, edit their content in an inspector panel, and export the result as a real, standalone `.html` file you can host anywhere — Cloudflare Pages, GitHub Pages, a USB stick.
+KraniumPress runs entirely in your browser. You drag blocks onto a canvas, edit them in the inspector, and export a standalone `.html` file. Host that file on Cloudflare Pages, GitHub Pages, Vercel, or any webhost that serves static files.
 
-There is no backend, no account, no lock-in. Your page is saved as JSON in `localStorage` while you work, and exported as HTML when you're done.
+While you work, the page lives in localStorage as JSON. Exporting turns it into HTML. There's no account and no backend, so if you delete the builder your page keeps working.
 
 ## Quick start
 
@@ -19,18 +19,17 @@ python3 -m http.server 8080
 # open http://localhost:8080
 ```
 
-That's it. Any static file server works — the editor is three files plus the framework.
+Any static file server works. The editor is three files plus the framework.
 
 ## Features
 
-- **11 blocks** — hero, heading, text, image, card grid, button row, alert, stats, quote, divider, spacer
-- **Live inspector** — edit any block's props, canvas updates as you type
-- **Drag to reorder** — HTML5 drag & drop, plus move/duplicate/delete buttons
-- **Export HTML** — a real standalone page, framework-linked, XSS-escaped
-- **Export / import JSON** — pages are portable data, not database rows
-- **Preview mode** — hide the editor chrome, check desktop/mobile widths
-- **Autosave** — localStorage, survives reloads
-- **Themeable** — the framework's `k.config()` API works on exported pages (accent color, fonts, radius)
+- 11 blocks: hero, heading, text, image, card grid, button row, alert, stats, quote, divider, spacer
+- Live inspector that re-renders the canvas while you type
+- Drag to reorder, plus move, duplicate, and delete buttons on every block
+- Export to HTML or JSON, and import JSON back in
+- Preview mode with a desktop/mobile width toggle
+- Autosave, so a reload doesn't lose your page
+- The framework's `k.config()` API works on exported pages, so you can change accent color, fonts, and radius from one call
 
 ## Files
 
@@ -56,12 +55,12 @@ pricing: {
 },
 ```
 
-The editor picks it up automatically — rail, inspector, export.
+The rail, the inspector, and the exporter all read from the same object, so a new block needs no wiring anywhere else.
 
 ## Why plain HTML?
 
-Because a page builder that *outputs what WordPress renders* is more honest than one that outputs a database row. Export gives you a file; the file is yours. Delete the builder and your page still works.
+A builder that exports what WordPress renders seemed more honest to me than one that exports a database row. The export is a file, and the file is yours to keep even if this project disappears tomorrow.
 
 ## License
 
-GPL-3.0 — see [LICENSE](LICENSE).
+GNU General Public License version 3. See [LICENSE](LICENSE).
