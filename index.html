@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KraniumPress — block builder</title>
+<link rel="stylesheet" href="kranium.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* editor chrome (krp-*) — canvas styles come from kranium.css itself */
+  html, body { margin:0; height:100%; }
+  body { background:var(--k-bg-deep); color:var(--k-text-primary); font-family:var(--k-font-sans); }
+  #krp-app { display:flex; flex-direction:column; height:100vh; }
+
+  .krp-top { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--k-bg-card); border-bottom:1px solid var(--k-border); flex-wrap:wrap; }
+  .krp-brand { font-family:var(--k-font-display); font-weight:700; letter-spacing:.04em; margin-right:6px; }
+  .krp-brand b { color:var(--k-accent-bright); }
+  #krp-title { background:var(--k-bg-elevated); border:1px solid var(--k-border); color:var(--k-text-primary); border-radius:var(--k-radius-sm); padding:7px 10px; font:inherit; width:170px; }
+  .krp-btn { background:var(--k-bg-elevated); border:1px solid var(--k-border); color:var(--k-text-primary); border-radius:var(--k-radius-sm); padding:7px 12px; font:inherit; font-size:13px; cursor:pointer; }
+  .krp-btn:hover { border-color:var(--k-accent); color:var(--k-accent-bright); }
+  .krp-btn:focus-visible { outline:2px solid var(--k-accent); outline-offset:2px; }
+  .krp-btn-acc { background:var(--k-accent-dim); border-color:var(--k-accent); color:var(--k-accent-bright); }
+  #krp-flash { font-size:12px; color:var(--k-accent-bright); opacity:0; transition:opacity .3s; margin-left:auto; }
+  .krp-top .spacer { flex:1; }
+  #krp-width { background:var(--k-bg-elevated); border:1px solid var(--k-border); color:var(--k-text-primary); border-radius:var(--k-radius-sm); padding:7px; font:inherit; font-size:13px; }
+
+  .krp-mid { display:flex; flex:1; min-height:0; }
+  .krp-rail { width:170px; background:var(--k-bg-card); border-right:1px solid var(--k-border); padding:10px; overflow-y:auto; }
+  .krp-rail h3 { font-size:11px; letter-spacing:.2em; opacity:.55; margin:4px 0 10px; }
+  .krp-rail-item { display:block; width:100%; text-align:left; background:var(--k-bg-elevated); color:var(--k-text-primary); border:1px solid var(--k-border); border-radius:var(--k-radius-sm); padding:8px 10px; margin-bottom:6px; font:inherit; font-size:13px; cursor:pointer; }
+  .krp-rail-item:hover { border-color:var(--k-accent); color:var(--k-accent-bright); }
+  .krp-rail-item:focus-visible { outline:2px solid var(--k-accent); outline-offset:2px; }
+
+  .krp-canvas-wrap { flex:1; overflow-y:auto; padding:26px 18px 80px; }
+  #krp-canvas { max-width:960px; margin:0 auto; transition:max-width .25s; }
+
+  .krp-block { position:relative; border:1px solid transparent; border-radius:var(--k-radius-md); margin-bottom:6px; }
+  .krp-block:hover { border-color:var(--k-border); }
+  .krp-sel { border-color:var(--k-accent) !important; box-shadow:0 0 0 1px var(--k-accent-dim); }
+  .krp-drag { opacity:.4; }
+  .krp-over { border-top:3px solid var(--k-accent); }
+  .krp-bar { position:absolute; top:-14px; right:8px; display:none; gap:4px; z-index:5; }
+  .krp-block:hover .krp-bar, .krp-sel .krp-bar { display:flex; }
+  .krp-bar-name { background:var(--k-accent-dim); color:var(--k-accent-bright); border:1px solid var(--k-accent); font-size:10px; letter-spacing:.12em; padding:2px 8px; border-radius:3px; }
+  .krp-bar button { background:var(--k-bg-elevated); border:1px solid var(--k-border); color:var(--k-text-primary); width:26px; height:24px; border-radius:3px; cursor:pointer; font-size:13px; }
+  .krp-bar button:hover { border-color:var(--k-accent); color:var(--k-accent-bright); }
+  .krp-body { padding:6px 10px; cursor:pointer; }
+  .krp-body .k-hero, .krp-body section, .krp-body div { cursor:pointer; }
+
+  .krp-insp { width:290px; background:var(--k-bg-card); border-left:1px solid var(--k-border); padding:14px; overflow-y:auto; }
+  .krp-insp-head { font-family:var(--k-font-display); font-weight:600; letter-spacing:.06em; margin-bottom:12px; color:var(--k-accent-bright); }
+  .krp-insp-empty { opacity:.5; font-size:13px; line-height:1.6; }
+  .krp-field { display:block; margin-bottom:12px; }
+  .krp-field span { display:block; font-size:11px; letter-spacing:.12em; opacity:.6; margin-bottom:5px; font-family:var(--k-font-mono); }
+  .krp-field input, .krp-field textarea, .krp-field select { width:100%; box-sizing:border-box; background:var(--k-bg-elevated); border:1px solid var(--k-border); color:var(--k-text-primary); border-radius:var(--k-radius-sm); padding:8px 10px; font:inherit; font-size:13px; }
+  .krp-field textarea { font-family:var(--k-font-mono); font-size:12px; resize:vertical; }
+  .krp-field input:focus, .krp-field textarea:focus, .krp-field select:focus { outline:none; border-color:var(--k-accent); }
+
+  body.krp-preview .krp-rail, body.krp-preview .krp-insp, body.krp-preview .krp-top .krp-hideprev { display:none; }
+  body.krp-preview .krp-block { border-color:transparent !important; }
+  body.krp-preview .krp-bar { display:none !important; }
+
+  @media (max-width: 900px) {
+    .krp-insp { width:230px; }
+    .krp-rail { width:130px; }
+  }
+  @media (max-width: 640px) {
+    .krp-mid { flex-direction:column; overflow-y:auto; }
+    .krp-rail, .krp-insp { width:auto; border:none; border-bottom:1px solid var(--k-border); max-height:180px; }
+    .krp-canvas-wrap { padding:14px 10px 60px; }
+  }
+</style>
+</head>
+<body>
+<div id="krp-app">
+  <div class="krp-top">
+    <span class="krp-brand">KRANIUM<b>PRESS</b></span>
+    <input id="krp-title" aria-label="Page title" placeholder="Page title">
+    <button class="krp-btn krp-btn-acc" id="krp-save">💾 Save</button>
+    <button class="krp-btn" id="krp-add">＋ Add</button>
+    <button class="krp-btn" id="krp-export">⬇ Export HTML</button>
+    <button class="krp-btn" id="krp-json">⬇ JSON</button>
+    <label class="krp-btn" style="position:relative;overflow:hidden">⬆ Import<input type="file" id="krp-import" accept=".json" style="position:absolute;inset:0;opacity:0;cursor:pointer"></label>
+    <button class="krp-btn" id="krp-preview">👁 Preview</button>
+    <button class="krp-btn krp-hideprev" id="krp-reset">↺ New</button>
+    <span class="spacer"></span>
+    <select id="krp-width" aria-label="Preview width">
+      <option value="desktop">🖥 desktop</option>
+      <option value="mobile">📱 mobile</option>
+    </select>
+    <span id="krp-flash">saved ✓</span>
+  </div>
+  <div class="krp-mid">
+    <nav class="krp-rail" id="krp-rail" aria-label="Block library"><h3>BLOCKS</h3></nav>
+    <div class="krp-canvas-wrap"><div id="krp-canvas"></div></div>
+    <aside class="krp-insp" id="krp-insp" aria-label="Block settings"></aside>
+  </div>
+</div>
+<script src="kranium.js" defer></script>
+<script src="blocks.js" defer></script>
+<script src="editor.js" defer></script>
+</body>
+</html>
